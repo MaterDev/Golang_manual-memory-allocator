@@ -1,7 +1,6 @@
 package allocator
 
 import (
-	"bytes"
 	"errors"
 )
 
@@ -56,13 +55,55 @@ func (ma *MemoryAllocator) Allocate(size int) (int, error) {
 			}
 		}
 	}
-	return 0, errors.New("no free memory block large enough.")
+	return 0, errors.New("no free memory block large enough")
 
 }
 
 // TODO: Method for MemoryAllocator to free memory blocks at a given address.
+func (ma *MemoryAllocator) Deallocate(address int) error {
+	for i, block := range ma.Blocks {
+		if block.Address == address {
+			if block.Free {
+				return errors.New("mrmory already free")
+			}
+			// Free the block
+			block.Free = true
+			ma.coalesce(i)
+			return nil
+		}
 
-// TODO: Method for MemoryAllocator to coalesce (merge) adjacent free blocks.
+	}
+	return errors.New("invalid address")
+}
+
+// Method for MemoryAllocator to coalesce (merge) adjacent free blocks (merging into left).
+func (ma *MemoryAllocator) coalesce(index int) {
+
+	// ! Step 1
+	// Coalesce with next block if free
+	// If this index is not the last block AND the block after it is Free
+	if index < len(ma.Blocks)-1 && ma.Blocks[index+1].Free {
+		// Will add the size of the next block into the index block.
+		ma.Blocks[index].Size += ma.Blocks[index+1].Size
+		// Remove the next block from the slice:
+			// ma.Blocks[:index+1] keeps all blocks upto and including the current index
+			// ma.Blocks[index+2...:] will create a new slice with the items from index+2 at the end.
+				// the ... after the slice wll unpack these as individual arguments.
+		ma.Blocks = append(ma.Blocks[:index+1], ma.Blocks[index+2:]...)
+	}
+
+	// ! Step 2
+	// Coalesce with previous block if free
+	// If this index is after the 0th AND the block before it is free
+	if index > 0 && ma.Blocks[index-1].Free {
+		// Adds the size of the current index to the previous index
+		ma.Blocks[index-1].Size += ma.Blocks[index].Size
+		// Will slice up to and not including the current index
+		// Will unpack and append all the blocks from after the first index.
+		ma.Blocks = append(ma.Blocks[:index], ma.Blocks[index+1:]...)
+	}
+
+}
 
 // TODO: Method for MemoryAllocator to simulate garbage collection process
 
