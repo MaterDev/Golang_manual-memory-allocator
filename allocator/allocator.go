@@ -2,6 +2,7 @@ package allocator
 
 import (
 	"errors"
+	"fmt"
 )
 
 /*
@@ -86,9 +87,9 @@ func (ma *MemoryAllocator) coalesce(index int) {
 		// Will add the size of the next block into the index block.
 		ma.Blocks[index].Size += ma.Blocks[index+1].Size
 		// Remove the next block from the slice:
-			// ma.Blocks[:index+1] keeps all blocks upto and including the current index
-			// ma.Blocks[index+2...:] will create a new slice with the items from index+2 at the end.
-				// the ... after the slice wll unpack these as individual arguments.
+		// ma.Blocks[:index+1] keeps all blocks upto and including the current index
+		// ma.Blocks[index+2...:] will create a new slice with the items from index+2 at the end.
+		// the ... after the slice wll unpack these as individual arguments.
 		ma.Blocks = append(ma.Blocks[:index+1], ma.Blocks[index+2:]...)
 	}
 
@@ -106,9 +107,65 @@ func (ma *MemoryAllocator) coalesce(index int) {
 }
 
 // TODO: Method for MemoryAllocator to simulate garbage collection process
+func (ma *MemoryAllocator) GarbageCollect() int {
+	collected := 0
+
+	// For each block in the MemoryAllocator's slice of []MemoryBlocks,
+
+	// If not free, will check if the memory block at the current address is zeroed out.
+	// If zeroed out
+	// will set Free to true
+	// Will add the block's size to collected
+	// Will return total collected.
+
+	for _, block := range ma.Blocks {
+		// Check if the block is not-free
+		if !block.Free {
+			// If not free, will check if the memory block at the current address is zeroed out.
+			// (Essentially it's in use or not. This is a simulated process, assuming if the byte is zero, the block is no longer in use.)
+			if ma.Memory[block.Address] == 0 {
+				block.Free = true
+				collected += block.Size
+			}
+
+		}
+	}
+	return collected
+}
 
 // -------------- Visualizer
 
-// TODO: Method for MemoryAllocator to return copy of memory blocks for visualziation.
+// Method for MemoryAllocator to return copy of memory blocks for visualziation.
+func (ma *MemoryAllocator) GetBlocks() []MemoryBlock {
+	// Make a new slice of MemoryBlock with a size that is the same the current instance of MemoryAllocator's blocks.
+	blocks := make([]MemoryBlock, len(ma.Blocks))
 
-// TODO: Method for MemoryAllocator to provide a string representation of the MemoryAllocator
+	// For all blocks in the Memory Allocator's blocks
+	for i, block := range ma.Blocks {
+		// Set the value of blocks current index to a pointer for the corresponding block in MemoryAllocator's MemoryBlock
+		blocks[i] = *block // *When you assign a struct to a new variable, you are creating a copy of that struct.
+	}
+
+	// Basically, returning dereferenced copy of the original slice.
+	return blocks
+}
+
+// Method for MemoryAllocator to provide a string representation of the MemoryAllocator
+func (ma *MemoryAllocator) String() string {
+	var s string
+	
+	// For each block in the  MA Blocks, 
+		// Start with a status of "Allocated"
+			// If the block is free, change the status to "Free"
+		// After, concatenate a new message to s, which has the information about the current block
+	for _, block := range ma.Blocks {
+		status := "Allocated"
+		if block.Free {
+			status = "Free"
+		}
+		s += fmt.Sprintf("Address: %d, Size: %d, Status: %s\n", block.Address, block.Size, status)
+	}
+
+	// Return formatted string representation of MemoryAllocator
+	return s
+}
