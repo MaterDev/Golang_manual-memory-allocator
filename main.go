@@ -3,10 +3,9 @@ package main
 import (
 	"fmt"
 	"golang_manual-memory-allocator/allocator"
+	"golang_manual-memory-allocator/visualizer"
 	"log"
 	"math/rand"
-	// "golang_manual-memory-allocator/allocator"
-	// "golang_manual-memory-allocator/visualizer"
 )
 
 // Constant Values
@@ -58,7 +57,8 @@ func main() {
 		}
 
 	
-		// TODO: Visualize the memory state after each operation
+		// Visualize the memory state after each operation
+		fmt.Println(visualizer.VisualizeMemory(mem))
 	}
 
 	// Perform garbage collection.
@@ -67,4 +67,5 @@ func main() {
 	
 	// Final Memory Visualization
 	fmt.Println("Final Memory State: 📈")
+	fmt.Println(visualizer.VisualizeMemory(mem))
 }
