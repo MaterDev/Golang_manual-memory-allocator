@@ -36,7 +36,7 @@ func NewMemoryAllocator(size int) *MemoryAllocator {
 	}
 }
 
-// TODO: Method for MemoryAllocator that allocates block of memory of the given size.
+// Method for MemoryAllocator that allocates block of memory of the given size.
 func (ma *MemoryAllocator) Allocate(size int) (int, error) {
 	for i, block := range ma.Blocks {
 		// If block is free and large enough for the size needed.
@@ -60,12 +60,13 @@ func (ma *MemoryAllocator) Allocate(size int) (int, error) {
 
 }
 
-// TODO: Method for MemoryAllocator to free memory blocks at a given address.
+// Method for MemoryAllocator to free memory blocks at a given address.
 func (ma *MemoryAllocator) Deallocate(address int) error {
 	for i, block := range ma.Blocks {
+		// fmt.Printf("In for scope of Deallocate()")
 		if block.Address == address {
 			if block.Free {
-				return errors.New("mrmory already free")
+				return errors.New("memory already free")
 			}
 			// Free the block
 			block.Free = true
@@ -106,7 +107,7 @@ func (ma *MemoryAllocator) coalesce(index int) {
 
 }
 
-// TODO: Method for MemoryAllocator to simulate garbage collection process
+// Method for MemoryAllocator to simulate garbage collection process
 func (ma *MemoryAllocator) GarbageCollect() int {
 	collected := 0
 
