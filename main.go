@@ -18,6 +18,8 @@ const (
 )
 
 func main() {
+	// This variable will keep track of all the addresses that have been allocated. Allocate will add, deallocate will remove.
+	var allocatedAddresses []int
 
 	// Create a new memory allocator
 	mem := allocator.NewMemoryAllocator(memorySize)
@@ -36,10 +38,13 @@ func main() {
 			} else {
 				// Else print to standard logger, how many bytes (size) and at what address it is stored.
 				log.Printf("Allocated %d bytes at address %d", size, addr)
+				allocatedAddresses = append(allocatedAddresses, addr)
 			}
 		} else { // 30% chance deallocation
-			// Generate a random number from zero up to memorysize
-			addr := rand.Intn(memorySize)
+			// Generate a random index from allocated addresses
+			index := rand.Intn(len(allocatedAddresses))
+			addr := allocatedAddresses[index]
+
 			// Use random address to deallocate from the memoryblock
 			err := mem.Deallocate(addr)
 
@@ -47,6 +52,8 @@ func main() {
 				log.Printf("Deallocation failed: %v", err)
 			} else {
 				log.Printf("Deallocated memory at address %d", addr)
+				// remove address from the list
+				allocatedAddresses = append(allocatedAddresses[:index], allocatedAddresses[index+1:]...)
 			}
 		}
 
