@@ -38,8 +38,9 @@ go-manual-memory-allocator/
 1. Clone the repository:
 
    ```bash
-   git clone https://github.com/yourusername/go-manual-memory-allocator.git
-   cd go-manual-memory-allocator
+   git clone https://github.com/MaterDev/Golang_manual-memory-allocator.git
+   
+   cd Golang_manual-memory-allocator
    ```
 
 2. Ensure you have Go installed on your system.
